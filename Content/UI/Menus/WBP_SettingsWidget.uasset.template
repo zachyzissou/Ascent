@@ -1,0 +1,161 @@
+// Settings Widget Blueprint Template
+// Parent Class: SettingsWidget (C++)
+
+Widget Hierarchy:
+├── Root (Canvas Panel)
+│   ├── BackgroundPanel (Image) [Full screen, Dark background with opacity]
+│   │
+│   ├── MainContainer (Horizontal Box) [Anchor: Fill, Margins: 50]
+│   │   ├── CategoryNavigation (Vertical Box) [Size: 20% width]
+│   │   │   ├── CategoryTitle (Text Block) "Settings" [Font: Bold, Size: 24]
+│   │   │   ├── Spacer (20px)
+│   │   │   ├── GameplayButton (Button) "Gameplay"
+│   │   │   ├── ControlsButton (Button) "Controls" 
+│   │   │   ├── AudioButton (Button) "Audio"
+│   │   │   ├── VideoButton (Button) "Video"
+│   │   │   ├── AccessibilityButton (Button) "Accessibility"
+│   │   │   └── MultiplayerButton (Button) "Multiplayer"
+│   │   │
+│   │   └── SettingsContent (Vertical Box) [Size: 80% width]
+│   │       ├── CategorySwitcher (Widget Switcher) [Fill space]
+│   │       │   │
+│   │       │   ├── GameplayPanel (Scroll Box) [Index 0]
+│   │       │   │   └── GameplayContainer (Vertical Box)
+│   │       │   │       ├── SectionTitle (Text Block) "Gameplay Settings"
+│   │       │   │       ├── DifficultyRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Difficulty Level:"
+│   │       │   │       │   └── DifficultyComboBox (ComboBox String)
+│   │       │   │       ├── ClimbingAssistanceRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Climbing Assistance:"
+│   │       │   │       │   └── ClimbingAssistanceCheckBox (CheckBox)
+│   │       │   │       ├── FallDamageRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Fall Damage:"
+│   │       │   │       │   └── FallDamageCheckBox (CheckBox)
+│   │       │   │       └── StaminaRow (Horizontal Box)
+│   │       │   │           ├── Label (Text Block) "Stamina Depletion Rate:"
+│   │       │   │           └── StaminaDepletionSlider (Slider) [0.5-2.0]
+│   │       │   │
+│   │       │   ├── ControlsPanel (Scroll Box) [Index 1]
+│   │       │   │   └── ControlsContainer (Vertical Box)
+│   │       │   │       ├── SectionTitle (Text Block) "Control Settings"
+│   │       │   │       ├── MouseSensRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Mouse Sensitivity:"
+│   │       │   │       │   └── MouseSensitivitySlider (Slider) [0.1-5.0]
+│   │       │   │       ├── ControllerSensRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Controller Sensitivity:"
+│   │       │   │       │   └── ControllerSensitivitySlider (Slider) [0.1-5.0]
+│   │       │   │       ├── InvertYRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Invert Mouse Y:"
+│   │       │   │       │   └── InvertMouseYCheckBox (CheckBox)
+│   │       │   │       ├── KeyBindingsTitle (Text Block) "Key Bindings"
+│   │       │   │       └── KeyBindingsContainer (Vertical Box)
+│   │       │   │           // Dynamic key binding widgets
+│   │       │   │
+│   │       │   ├── AudioPanel (Scroll Box) [Index 2]
+│   │       │   │   └── AudioContainer (Vertical Box)
+│   │       │   │       ├── SectionTitle (Text Block) "Audio Settings"
+│   │       │   │       ├── MasterVolumeRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Master Volume:"
+│   │       │   │       │   └── MasterVolumeSlider (Slider) [0.0-1.0]
+│   │       │   │       ├── MusicVolumeRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Music Volume:"
+│   │       │   │       │   └── MusicVolumeSlider (Slider) [0.0-1.0]
+│   │       │   │       ├── SFXVolumeRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "SFX Volume:"
+│   │       │   │       │   └── SFXVolumeSlider (Slider) [0.0-1.0]
+│   │       │   │       ├── VoiceChatVolumeRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Voice Chat Volume:"
+│   │       │   │       │   └── VoiceChatVolumeSlider (Slider) [0.0-1.0]
+│   │       │   │       └── AudioDescriptionRow (Horizontal Box)
+│   │       │   │           ├── Label (Text Block) "Audio Description:"
+│   │       │   │           └── AudioDescriptionCheckBox (CheckBox)
+│   │       │   │
+│   │       │   ├── VideoPanel (Scroll Box) [Index 3]
+│   │       │   │   └── VideoContainer (Vertical Box)
+│   │       │   │       ├── SectionTitle (Text Block) "Video Settings"
+│   │       │   │       ├── ResolutionRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Resolution:"
+│   │       │   │       │   └── ResolutionComboBox (ComboBox String)
+│   │       │   │       ├── FullscreenRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Display Mode:"
+│   │       │   │       │   └── FullscreenModeComboBox (ComboBox String)
+│   │       │   │       ├── FrameRateRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Frame Rate Limit:"
+│   │       │   │       │   └── FrameRateLimitComboBox (ComboBox String)
+│   │       │   │       ├── VSyncRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "VSync:"
+│   │       │   │       │   └── VSyncCheckBox (CheckBox)
+│   │       │   │       └── GraphicsQualityRow (Horizontal Box)
+│   │       │   │           ├── Label (Text Block) "Graphics Quality:"
+│   │       │   │           └── GraphicsQualityComboBox (ComboBox String)
+│   │       │   │
+│   │       │   ├── AccessibilityPanel (Scroll Box) [Index 4]
+│   │       │   │   └── AccessibilityContainer (Vertical Box)
+│   │       │   │       ├── SectionTitle (Text Block) "Accessibility Settings"
+│   │       │   │       ├── UIScaleRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "UI Scale:"
+│   │       │   │       │   └── UIScaleSlider (Slider) [0.5-2.0]
+│   │       │   │       ├── FontSizeRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Font Size:"
+│   │       │   │       │   └── FontSizeComboBox (ComboBox String)
+│   │       │   │       ├── HighContrastRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "High Contrast Mode:"
+│   │       │   │       │   └── HighContrastCheckBox (CheckBox)
+│   │       │   │       ├── ColorBlindRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Colorblind Support:"
+│   │       │   │       │   └── ColorBlindModeComboBox (ComboBox String)
+│   │       │   │       ├── SubtitlesRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Subtitles:"
+│   │       │   │       │   └── SubtitlesCheckBox (CheckBox)
+│   │       │   │       ├── MotionSicknessRow (Horizontal Box)
+│   │       │   │       │   ├── Label (Text Block) "Reduce Motion:"
+│   │       │   │       │   └── MotionSicknessCheckBox (CheckBox)
+│   │       │   │       └── ScreenReaderRow (Horizontal Box)
+│   │       │   │           ├── Label (Text Block) "Screen Reader Support:"
+│   │       │   │           └── ScreenReaderCheckBox (CheckBox)
+│   │       │   │
+│   │       │   └── MultiplayerPanel (Scroll Box) [Index 5]
+│   │       │       └── MultiplayerContainer (Vertical Box)
+│   │       │           ├── SectionTitle (Text Block) "Multiplayer Settings"
+│   │       │           ├── PlayerNameRow (Horizontal Box)
+│   │       │           │   ├── Label (Text Block) "Player Name:"
+│   │       │           │   └── PlayerNameTextBox (Editable Text Box)
+│   │       │           ├── ProximityChatRow (Horizontal Box)
+│   │       │           │   ├── Label (Text Block) "Proximity Chat:"
+│   │       │           │   └── ProximityChatCheckBox (CheckBox)
+│   │       │           └── CrossplatformRow (Horizontal Box)
+│   │       │               ├── Label (Text Block) "Cross-platform Play:"
+│   │       │               └── CrossplatformCheckBox (CheckBox)
+│   │       │
+│   │       └── ActionButtonsContainer (Horizontal Box) [Anchor: Bottom]
+│   │           ├── ResetButton (Button) "Reset to Defaults"
+│   │           ├── Spacer (Fill)
+│   │           ├── CancelButton (Button) "Cancel"
+│   │           ├── ApplyButton (Button) "Apply"
+│   │           └── SaveButton (Button) "Save & Exit"
+│   │
+│   └── CloseButton (Button) [Anchor: Top-Right] "X"
+
+// Widget Binding Names (match C++ meta=(BindWidget)):
+// - CategorySwitcher
+// - GameplayButton through MultiplayerButton
+// - ApplyButton, SaveButton, ResetButton, CancelButton
+// - All sliders, checkboxes, and combo boxes as named
+
+// Styling Notes:
+// - Category buttons: Highlight active category
+// - Sliders: Show current values next to them
+// - Checkboxes: Use custom styling for better visibility
+// - High contrast mode: Alternative styling for all elements
+// - All text should be scalable for accessibility
+
+// Input Support:
+// - Tab navigation through all controls
+// - Arrow key navigation in combo boxes
+// - Space/Enter to activate buttons/checkboxes
+// - Escape to close settings
+
+// Additional Widget Classes:
+// - WBP_KeyBindingRow: Individual key binding control
+// - WBP_SliderRow: Slider with value display
+// - WBP_SettingsTooltip: Help tooltips for complex settings

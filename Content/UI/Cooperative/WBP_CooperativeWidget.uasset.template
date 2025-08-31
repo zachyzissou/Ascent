@@ -1,0 +1,105 @@
+// Cooperative Communication Widget Blueprint Template
+// Parent Class: CooperativeWidget (C++)
+
+Widget Hierarchy:
+├── Root (Canvas Panel)
+│   ├── MainContainer (Horizontal Box) [Anchor: Fill, Margins: 20]
+│   │   ├── LeftPanel (Vertical Box) [Size: 30% width]
+│   │   │   ├── TeammateStatusLabel (Text Block) "Team Status"
+│   │   │   └── TeammateStatusContainer (Vertical Box) [Fill space]
+│   │   │       // Dynamic teammate status widgets
+│   │   │
+│   │   ├── CenterPanel (Vertical Box) [Size: 40% width]
+│   │   │   ├── QuickCalloutsLabel (Text Block) "Quick Callouts"
+│   │   │   │
+│   │   │   ├── CalloutButtonsGrid (Uniform Grid Panel) [3 columns, 3 rows]
+│   │   │   │   ├── SafeToClimbButton (Button) "Safe to Climb"
+│   │   │   │   ├── TakeSlackButton (Button) "Take Slack"
+│   │   │   │   ├── GiveSlackButton (Button) "Give Slack"
+│   │   │   │   ├── LowerMeButton (Button) "Lower Me"
+│   │   │   │   ├── RopeFixedButton (Button) "Rope Fixed"
+│   │   │   │   ├── WatchRockfallButton (Button) "Watch Rockfall"
+│   │   │   │   ├── NeedHelpButton (Button) "Need Help" [Red background]
+│   │   │   │   ├── AllClearButton (Button) "All Clear" [Green background]
+│   │   │   │   └── EmergencyStopButton (Button) "EMERGENCY STOP" [Bright Red]
+│   │   │   │
+│   │   │   ├── Spacer (20px)
+│   │   │   │
+│   │   │   ├── CalloutHistoryLabel (Text Block) "Recent Messages"
+│   │   │   └── CalloutHistoryScrollBox (Scroll Box) [Height: 200px]
+│   │   │       └── CalloutHistoryContainer (Vertical Box)
+│   │   │           // Dynamic callout message widgets
+│   │   │
+│   │   └── RightPanel (Vertical Box) [Size: 30% width]
+│   │       ├── RopeStatusSection (Vertical Box)
+│   │       │   ├── RopeStatusLabel (Text Block) "Rope Status"
+│   │       │   ├── RopeStatusContainer (Horizontal Box)
+│   │       │   │   ├── RopeStatusIcon (Image) [Size: 24x24]
+│   │       │   │   └── RopeStatusText (Text Block) "Unknown"
+│   │       │   ├── TensionContainer (Horizontal Box)
+│   │       │   │   ├── TensionLabel (Text Block) "Tension:"
+│   │       │   │   └── RopeTensionBar (Progress Bar) [Width: 100px]
+│   │       │   └── RopeLengthText (Text Block) "Length: 0m"
+│   │       │
+│   │       ├── Spacer (20px)
+│   │       │
+│   │       ├── ProximityChatSection (Vertical Box)
+│   │       │   ├── ProximityChatLabel (Text Block) "Proximity Chat"
+│   │       │   ├── ProximityChatToggle (Button) "Toggle Chat"
+│   │       │   ├── ProximityChatStatusText (Text Block) "Proximity Chat: ON"
+│   │       │   └── VolumeContainer (Horizontal Box)
+│   │       │       ├── VolumeLabel (Text Block) "Volume:"
+│   │       │       └── ProximityVolumeBar (Progress Bar) [Width: 100px]
+│   │       │
+│   │       ├── Spacer (30px)
+│   │       │
+│   │       └── EmergencySection (Vertical Box)
+│   │           ├── EmergencyLabel (Text Block) "Emergency"
+│   │           └── EmergencyAlertButton (Button) "EMERGENCY ALERT" [Large, Red]
+│   │
+│   └── CloseButton (Button) [Anchor: Top-Right] "Close"
+
+// Widget Binding Names:
+// - TeammateStatusContainer
+// - CalloutHistoryScrollBox
+// - CalloutHistoryContainer
+// - SafeToClimbButton through EmergencyStopButton
+// - RopeStatusText
+// - RopeTensionBar
+// - RopeLengthText  
+// - RopeStatusIcon
+// - ProximityChatToggle
+// - ProximityVolumeBar
+// - ProximityChatStatusText
+// - EmergencyAlertButton
+
+// Additional Widget Classes to Create:
+// - WBP_TeammateStatus: Individual teammate info display
+//   * Player name, health/stamina bars, altitude, status icons
+// - WBP_CalloutMessage: Individual message in chat history
+//   * Sender name, message text, timestamp, urgency indicator
+
+// Button Styling:
+// - Normal callouts: Blue background, white text
+// - Warning callouts (rockfall): Yellow background, black text  
+// - Help callouts: Orange background, white text
+// - Emergency: Bright red background, white text, larger font
+// - All Clear: Green background, white text
+
+// Audio Cues:
+// - Normal callouts: Standard beep
+// - Emergency callouts: Urgent alarm sound
+// - Received messages: Different tone based on sender proximity
+
+// Input Bindings:
+// - F1-F9: Quick callout shortcuts
+// - T: Toggle proximity chat
+// - Ctrl+E: Emergency alert
+// - Enter: Open text chat (if implemented)
+
+// Accessibility:
+// - High contrast mode for button backgrounds
+// - Screen reader support for all text
+// - Keyboard navigation between callout buttons
+// - Visual indicators for audio cues
+// - Scalable text size options

@@ -1,0 +1,126 @@
+// Climbing Feedback Widget Blueprint Template
+// This file should be created in Unreal Editor as a Widget Blueprint
+// Parent Class: ClimbingFeedbackWidget (C++)
+
+Widget Hierarchy:
+├── Root (Canvas Panel) [Anchor: Fill]
+│   ├── MainFeedbackContainer (Canvas Panel) [Anchor: Fill]
+│   │   │
+│   │   ├── HoldAnalysisPanel (Border) [Anchor: Bottom-Left, Position: (50, -200), Size: (300, 150)]
+│   │   │   ├── AnalysisBackground (Image) [Tint: Semi-transparent dark blue]
+│   │   │   ├── HoldInfoContainer (Vertical Box) [Padding: 10]
+│   │   │   │   ├── HoldTypeText (Text Block) [Font: Bold, Size: 16, Color: Cyan]
+│   │   │   │   ├── HoldDetailsContainer (Horizontal Box)
+│   │   │   │   │   ├── HoldDiagramImage (Image) [Size: 64x64]
+│   │   │   │   │   └── HoldStatsContainer (Vertical Box)
+│   │   │   │   │       ├── HoldQualityContainer (Horizontal Box)
+│   │   │   │   │       │   ├── QualityLabel (Text Block) "Quality:"
+│   │   │   │   │       │   └── HoldQualityBar (Progress Bar) [Size: 80x8]
+│   │   │   │   │       ├── GripStrengthContainer (Horizontal Box)
+│   │   │   │   │       │   ├── GripLabel (Text Block) "Grip Req:"
+│   │   │   │   │       │   └── GripRequiredBar (Progress Bar) [Size: 80x8]
+│   │   │   │   │       └── HoldDetailsText (Text Block) [Size: 12, Color: Light Gray]
+│   │   │   │   └── HoldTipsContainer (Vertical Box)
+│   │   │   │       ├── TipsLabel (Text Block) "Tips:" [Font: Bold, Size: 12]
+│   │   │   │       └── HoldTipsText (Text Block) [Size: 11, Word Wrap: True]
+│   │   │
+│   │   ├── RouteGuidancePanel (Border) [Anchor: Top-Right, Position: (-350, 50), Size: (320, 200)]
+│   │   │   ├── GuidanceBackground (Image) [Tint: Semi-transparent green]
+│   │   │   ├── RouteInfoContainer (Vertical Box) [Padding: 10]
+│   │   │   │   ├── RouteHeader (Horizontal Box)
+│   │   │   │   │   ├── RouteGradeText (Text Block) [Font: Bold, Size: 18, Color: White]
+│   │   │   │   │   └── RouteDifficultyBar (Progress Bar) [Size: 100x8, Fill: Orange]
+│   │   │   │   ├── RouteSequenceContainer (Vertical Box)
+│   │   │   │   │   ├── SequenceLabel (Text Block) "Sequence:" [Font: Bold, Size: 12]
+│   │   │   │   │   └── RouteSequenceText (Rich Text Block) [Size: 11, Auto Wrap: True]
+│   │   │   │   └── NextHoldsContainer (Vertical Box)
+│   │   │   │       ├── NextHoldsLabel (Text Block) "Next Holds:" [Font: Bold, Size: 12]
+│   │   │   │       └── NextHoldsScrollBox (Scroll Box) [Max Height: 80]
+│   │   │   │           // Dynamic next hold widgets created here
+│   │   │
+│   │   ├── TechniqueHintPanel (Border) [Anchor: Center-Left, Position: (20, 0), Size: (280, 120)]
+│   │   │   ├── HintBackground (Image) [Tint: Semi-transparent yellow]
+│   │   │   ├── TechniqueContainer (Horizontal Box) [Padding: 10]
+│   │   │   │   ├── TechniqueDiagramImage (Image) [Size: 80x80]
+│   │   │   │   └── TechniqueInfoContainer (Vertical Box)
+│   │   │   │       ├── TechniqueTitleText (Text Block) [Font: Bold, Size: 14, Color: Black]
+│   │   │   │       └── TechniqueDescriptionText (Text Block) [Size: 11, Color: Dark Gray, Word Wrap: True]
+│   │   │
+│   │   ├── SafetyAlertPanel (Border) [Anchor: Top-Center, Position: (0, 100), Size: (400, 80)]
+│   │   │   ├── AlertBackground (Image) [Tint: Red with pulsing animation]
+│   │   │   ├── SafetyAlertContainer (Horizontal Box) [Padding: 10]
+│   │   │   │   ├── SafetyAlertIcon (Image) [Size: 48x48, Texture: Warning icon]
+│   │   │   │   ├── SafetyInfoContainer (Vertical Box)
+│   │   │   │   │   ├── SafetyAlertText (Text Block) [Font: Bold, Size: 16, Color: White]
+│   │   │   │   │   └── AlertSeverityContainer (Horizontal Box)
+│   │   │   │   │       ├── SeverityLabel (Text Block) "Severity:"
+│   │   │   │   │       └── AlertSeverityBar (Progress Bar) [Size: 100x8, Fill: Red]
+│   │   │   │   └── AcknowledgeButton (Button) [Size: 60x30] "OK"
+│   │   │
+│   │   ├── ToolGuidancePanel (Border) [Anchor: Bottom-Center, Position: (0, -100), Size: (350, 80)]
+│   │   │   ├── ToolGuidanceBackground (Image) [Tint: Semi-transparent purple]
+│   │   │   ├── ToolInfoContainer (Horizontal Box) [Padding: 10]
+│   │   │   │   ├── ToolPlacementIcon (Image) [Size: 48x48]
+│   │   │   │   ├── ToolInfoDetails (Vertical Box)
+│   │   │   │   │   ├── ToolNameText (Text Block) [Font: Bold, Size: 14, Color: White]
+│   │   │   │   │   └── PlacementQualityText (Text Block) [Size: 12, Color: Light Gray]
+│   │   │   │   └── PlacementIndicator (Image) [Size: 32x32] // Green check or red X
+│   │   │
+│   │   ├── WeatherUpdatePanel (Border) [Anchor: Top-Left, Position: (50, 100), Size: (250, 60)]
+│   │   │   ├── WeatherBackground (Image) [Tint: Semi-transparent blue]
+│   │   │   ├── WeatherContainer (Horizontal Box) [Padding: 8]
+│   │   │   │   ├── WeatherIcon (Image) [Size: 32x32]
+│   │   │   │   └── WeatherInfoContainer (Vertical Box)
+│   │   │   │       ├── WeatherChangeText (Text Block) [Font: Bold, Size: 13, Color: White]
+│   │   │   │       └── WeatherImpactText (Text Block) [Size: 11, Color: Light Blue]
+│   │   │
+│   │   └── AchievementPanel (Border) [Anchor: Center, Position: (0, -50), Size: (350, 100)]
+│   │       ├── AchievementBackground (Image) [Tint: Gold with sparkle effect]
+│   │       ├── AchievementContainer (Horizontal Box) [Padding: 10]
+│   │       │   ├── AchievementIcon (Image) [Size: 64x64]
+│   │       │   └── AchievementInfoContainer (Vertical Box)
+│   │       │       ├── AchievementTitleText (Text Block) [Font: Bold, Size: 16, Color: Gold]
+│   │       │       ├── AchievementDescriptionText (Text Block) [Size: 12, Color: Yellow, Word Wrap: True]
+│   │       │       └── AchievementPointsText (Text Block) [Size: 11, Color: Orange]
+│   │
+│   └── FeedbackControlsContainer (Horizontal Box) [Anchor: Bottom-Right, Position: (-150, -30)]
+│       ├── FeedbackIntensitySlider (Slider) [Size: 80x20, Min: 0, Max: 1]
+│       ├── ExpertModeCheckBox (Check Box) [Size: 20x20]
+│       └── FeedbackOptionsButton (Button) [Size: 30x30, Text: "⚙"]
+
+// Widget Binding Names (must match C++ meta=(BindWidget)):
+// Container panels:
+// - MainFeedbackContainer, HoldAnalysisPanel, RouteGuidancePanel
+// - TechniqueHintPanel, SafetyAlertPanel, ToolGuidancePanel
+// - WeatherUpdatePanel, AchievementPanel
+
+// Content elements:
+// - HoldTypeText, HoldQualityBar, GripRequiredBar, HoldDiagramImage, HoldDetailsText
+// - RouteGradeText, RouteSequenceText, NextHoldsContainer, RouteDifficultyBar
+// - TechniqueTitleText, TechniqueDescriptionText, TechniqueDiagramImage
+// - SafetyAlertText, SafetyAlertIcon, AlertSeverityBar
+// - ToolNameText, PlacementQualityText, ToolPlacementIcon
+// - WeatherChangeText, WeatherIcon
+// - AchievementTitleText, AchievementDescriptionText, AchievementIcon
+
+// Animation Blueprints to create:
+// - FadeInFeedback: Smooth fade in for all feedback panels
+// - FadeOutFeedback: Smooth fade out when dismissing
+// - PulseSafetyAlert: Urgent pulsing for safety alerts
+// - SlideInFromSide: Slide animations for different feedback types
+// - AchievementCelebration: Special celebration animation with particles
+// - WeatherTransition: Smooth color transitions for weather changes
+
+// Feedback Customization:
+// - Intensity slider affects visibility and detail level
+// - Expert mode reduces beginner-level hints
+// - Position customization for each feedback type
+// - Accessibility options for high contrast and large text
+// - Auto-dismiss timers for non-critical feedback
+
+// Responsive Behavior:
+// - Panels automatically reposition to avoid overlap
+// - Critical feedback (safety) always takes priority
+// - Feedback queuing system for multiple simultaneous messages
+// - Screen edge detection to prevent off-screen positioning
+// - VR-compatible depth and sizing adjustments

@@ -1,0 +1,190 @@
+# Unreal Engine .gitignore for ClimbingGame
+
+# Unreal Engine Build Files
+/Binaries/
+/Build/
+/Intermediate/
+/DerivedDataCache/
+/.vs/
+*.sln
+*.suo
+*.xcodeproj
+*.xcworkspace
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Build Results of an ATL Project
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio Cache
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# TFS Local Workspace
+$tf/
+
+# Guidance Automation Toolkit
+*.gpState
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# JustCode
+.JustCode
+
+# TeamCity
+_TeamCity*
+
+# DotCover
+*.dotCover
+
+# NCrunch
+_NCrunch_*
+.*crunch*.local.xml
+nCrunchTemp_*
+
+# MightyMoose
+*.mm.*
+AutoTest.Net/
+
+# Cake - Local history
+.localhistory/
+
+# NVidia Nsight GPU debugger configuration file
+*.nvuser
+
+# MFractors (Xamarin productivity tool) working folder
+.mfractor/
+
+# Unreal Engine specific ignores
+*.VC.db
+*.VC.VC.opendb
+*.opensdf
+*.sdf
+*.tmp
+*.log
+*.tlog
+
+# Unreal crash logs
+Saved/Crashes/
+Saved/Logs/
+
+# Unreal autosaves
+Saved/AutoSaves/
+
+# Unreal config backups
+Saved/Config/CrashReportClient/
+
+# Unreal backup files
+Saved/Backup/
+
+# Shader working directory
+Saved/ShaderDebugInfo/
+
+# Cooked content for dedicated server builds
+Saved/CookedContent/
+
+# Unreal automation tool logs
+Saved/Automation/
+
+# Stats files
+Saved/Stats/
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# DevOps and CI/CD specific
+.env
+.env.local
+.env.*.local
+secrets.json
+appsettings.Development.json
+
+# Build artifacts
+/Dist/
+/Deploy/
+/Packages/
+/Artifacts/
+
+# Performance profiling output
+*.performanceprofile
+*.stats
+*.trace
+
+# Test output
+TestResults/
+coverage.xml
+*.coverage
+*.coveragexml
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python cache (for build scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Node modules (if using any JavaScript tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary build files
+*.old
+*.backup
+*.bak

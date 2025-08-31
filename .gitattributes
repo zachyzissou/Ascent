@@ -1,0 +1,97 @@
+# Unreal Engine Git LFS Configuration for ClimbingGame
+
+# Binary Assets - Store in LFS
+*.uasset filter=lfs diff=lfs merge=lfs -text
+*.umap filter=lfs diff=lfs merge=lfs -text
+*.ubulk filter=lfs diff=lfs merge=lfs -text
+*.uptnl filter=lfs diff=lfs merge=lfs -text
+*.ufont filter=lfs diff=lfs merge=lfs -text
+
+# 3D Models and Meshes
+*.fbx filter=lfs diff=lfs merge=lfs -text
+*.obj filter=lfs diff=lfs merge=lfs -text
+*.3ds filter=lfs diff=lfs merge=lfs -text
+*.dae filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+*.max filter=lfs diff=lfs merge=lfs -text
+*.ma filter=lfs diff=lfs merge=lfs -text
+*.mb filter=lfs diff=lfs merge=lfs -text
+
+# Textures and Images
+*.png filter=lfs diff=lfs merge=lfs -text
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.bmp filter=lfs diff=lfs merge=lfs -text
+*.tga filter=lfs diff=lfs merge=lfs -text
+*.tiff filter=lfs diff=lfs merge=lfs -text
+*.tif filter=lfs diff=lfs merge=lfs -text
+*.psd filter=lfs diff=lfs merge=lfs -text
+*.hdr filter=lfs diff=lfs merge=lfs -text
+*.exr filter=lfs diff=lfs merge=lfs -text
+*.dds filter=lfs diff=lfs merge=lfs -text
+
+# Audio Files
+*.wav filter=lfs diff=lfs merge=lfs -text
+*.aiff filter=lfs diff=lfs merge=lfs -text
+*.mp3 filter=lfs diff=lfs merge=lfs -text
+*.ogg filter=lfs diff=lfs merge=lfs -text
+*.flac filter=lfs diff=lfs merge=lfs -text
+
+# Video Files
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.mov filter=lfs diff=lfs merge=lfs -text
+*.avi filter=lfs diff=lfs merge=lfs -text
+*.wmv filter=lfs diff=lfs merge=lfs -text
+
+# Animation Files
+*.anim filter=lfs diff=lfs merge=lfs -text
+*.skeleton filter=lfs diff=lfs merge=lfs -text
+
+# Physics Assets
+*.phat filter=lfs diff=lfs merge=lfs -text
+
+# Compiled Shader Cache
+*.ushaderbytecode filter=lfs diff=lfs merge=lfs -text
+*.ushadercode filter=lfs diff=lfs merge=lfs -text
+
+# Build Outputs (if tracked)
+*.pak filter=lfs diff=lfs merge=lfs -text
+*.exe filter=lfs diff=lfs merge=lfs -text
+*.dll filter=lfs diff=lfs merge=lfs -text
+*.so filter=lfs diff=lfs merge=lfs -text
+*.dylib filter=lfs diff=lfs merge=lfs -text
+
+# Archive Files
+*.zip filter=lfs diff=lfs merge=lfs -text
+*.rar filter=lfs diff=lfs merge=lfs -text
+*.7z filter=lfs diff=lfs merge=lfs -text
+
+# Text files that should remain as text
+*.txt text
+*.md text
+*.cpp text
+*.h text
+*.cs text
+*.ini text
+*.config text
+*.json text
+*.xml text
+*.yaml text
+*.yml text
+*.bat text
+*.sh text
+*.py text
+*.js text
+
+# Line ending normalization for cross-platform development
+*.cpp text eol=crlf
+*.h text eol=crlf
+*.cs text eol=crlf
+*.ini text eol=crlf
+*.config text eol=crlf
+*.uproject text eol=crlf
+*.uplugin text eol=crlf
+
+# Shell scripts should use LF endings
+*.sh text eol=lf
+*.py text eol=lf

@@ -1,0 +1,92 @@
+// Enhanced Climbing HUD Widget Blueprint Template
+// This file should be created in Unreal Editor as a Widget Blueprint
+// Parent Class: ClimbingHUD (C++)
+
+Widget Hierarchy:
+├── Root (Canvas Panel)
+│   ├── MinimalHUDContainer (Canvas Panel) [Anchor: Fill, Visibility: Visible]
+│   │   ├── StaminaContainer (Horizontal Box) [Anchor: Top-Left, Position: (20, 20)]
+│   │   │   ├── StaminaIcon (Image) [Size: 32x32, Texture: T_StaminaIcon]
+│   │   │   ├── StaminaBar (Progress Bar) [Size: 150x10, Fill Color: (0,1,0,1)]
+│   │   │   └── StaminaText (Text Block) [Font Size: 14, Color: White]
+│   │   │
+│   │   ├── HealthContainer (Horizontal Box) [Anchor: Top-Left, Position: (20, 55)]
+│   │   │   ├── HealthIcon (Image) [Size: 32x32, Texture: T_HealthIcon]
+│   │   │   ├── HealthBar (Progress Bar) [Size: 150x10, Fill Color: (1,0,0,1)]
+│   │   │   └── HealthText (Text Block) [Font Size: 14, Color: White]
+│   │   │
+│   │   ├── GripContainer (Horizontal Box) [Anchor: Bottom-Left, Position: (20, -120)]
+│   │   │   ├── GripLabel (Text Block) "Grip Strength:"
+│   │   │   ├── LeftGripBar (Progress Bar) [Size: 80x10, Fill Color: (0,0.5,1,1)]
+│   │   │   ├── Spacer (15px)
+│   │   │   ├── RightGripBar (Progress Bar) [Size: 80x10, Fill Color: (0,0.5,1,1)]
+│   │   │   └── GripQualityBar (Progress Bar) [Size: 60x8, Fill Color: (1,1,0,1)]
+│   │   │
+│   │   ├── AltitudeContainer (Vertical Box) [Anchor: Top-Center, Position: (0, 20)]
+│   │   │   ├── AltitudeText (Text Block) [Font: Bold, Size: 18, Color: White]
+│   │   │   ├── EnvironmentInfoText (Text Block) [Font: Regular, Size: 12, Color: Light Gray]
+│   │   │   ├── WeatherInfoText (Text Block) [Font: Regular, Size: 12, Color: Yellow]
+│   │   │   └── RouteDifficultyText (Text Block) [Font: Bold, Size: 14, Color: Orange]
+│   │   │
+│   │   ├── ToolDurabilityContainer (Horizontal Box) [Anchor: Top-Right, Position: (-250, 20)]
+│   │   │   // Dynamic children created at runtime for each tool
+│   │   │
+│   │   ├── BodyPositionContainer (Vertical Box) [Anchor: Center-Left, Position: (20, 0)]
+│   │   │   ├── BalanceIndicator (Progress Bar) [Size: 100x8, Fill Color: (0,1,1,1)]
+│   │   │   ├── BodyPositionText (Text Block) [Font Size: 12, Color: Cyan]
+│   │   │   └── SurfaceAnalysisText (Text Block) [Font Size: 10, Color: Gray]
+│   │   │
+│   │   └── FeedbackContainer (Canvas Panel) [Anchor: Fill]
+│   │       ├── HoldPreviewPanel (Canvas Panel) [Anchor: Center, Visibility: Collapsed]
+│   │       │   ├── PreviewBackground (Border) [Size: 200x100, Background: Semi-transparent]
+│   │       │   ├── HoldPreviewIcon (Image) [Size: 48x48]
+│   │       │   └── ReachDifficultyText (Text Block)
+│   │       │
+│   │       ├── ToolPlacementGuidePanel (Canvas Panel) [Anchor: Center, Visibility: Collapsed]
+│   │       │   ├── GuideBackground (Border) [Size: 250x80, Background: Semi-transparent]
+│   │       │   ├── ToolPlacementIcon (Image) [Size: 32x32]
+│   │       │   ├── ToolPlacementText (Text Block) [Font Size: 14]
+│   │       │   └── PlacementQualityIndicator (Progress Bar)
+│   │       │
+│   │       └── InjuryWarningPanel (Canvas Panel) [Anchor: Center, Visibility: Hidden]
+│   │           ├── WarningBackground (Image) [Size: 400x100, Color: Red with Alpha 0.8]
+│   │           ├── InjuryWarningIcon (Image) [Position: (15, 15), Size: 48x48]
+│   │           └── InjuryWarningText (Text Block) [Position: (75, 35), Color: White, Font: Bold]
+│   │
+│   └── ImmersiveHUDContainer (Canvas Panel) [Anchor: Fill, Visibility: Collapsed]
+│       // Minimal UI for immersive mode - only critical information
+│       ├── MinimalStaminaBar (Progress Bar) [Anchor: Bottom-Center, Position: (0, -50), Size: 200x4]
+│       ├── MinimalHealthDots (Horizontal Box) [Anchor: Top-Left, Position: (10, 10)]
+│       └── CriticalWarningsOnly (Canvas Panel) [Anchor: Fill]
+
+// Widget Binding Names (must match C++ meta=(BindWidget)):
+// Core HUD elements:
+// - StaminaBar, HealthBar, LeftGripBar, RightGripBar
+// - AltitudeText, EnvironmentInfoText, WeatherInfoText, RouteDifficultyText
+// - ToolDurabilityContainer
+// - BodyPositionText, BalanceIndicator, SurfaceAnalysisText, GripQualityBar
+// - HoldPreviewPanel, ToolPlacementGuidePanel, ToolPlacementText
+// - InjuryWarningPanel, InjuryWarningText, InjuryWarningIcon
+
+// Animation Blueprints to create:
+// - StaminaWarningPulse: Pulse red when stamina below 25%
+// - HealthCriticalFlash: Flash red when health below 30%
+// - GripWarningShake: Subtle shake when grip strength low
+// - InjuryWarningSlideIn: Slide in from top with attention-getting effect
+// - HoldPreviewFadeIn: Smooth fade in for hold previews
+// - ToolGuidePopup: Quick popup animation for tool placement guides
+// - ImmersiveModeTransition: Smooth transition between HUD modes
+
+// Responsive Design Features:
+// - Anchor points for proper scaling across screen sizes
+// - Visibility bindings for accessibility options (minimal HUD, high contrast)
+// - Dynamic sizing based on UI scale settings
+// - Support for ultrawide and standard aspect ratios
+// - VR-compatible layouts with larger interactive areas
+
+// Accessibility Support:
+// - High contrast mode color variants
+// - Scalable UI elements
+// - Screen reader compatibility
+// - Color blind friendly color schemes
+// - Simplified UI mode for cognitive accessibility

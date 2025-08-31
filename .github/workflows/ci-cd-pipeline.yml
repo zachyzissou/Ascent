@@ -1,0 +1,519 @@
+name: ClimbingGame CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build Type'
+        required: true
+        default: 'Development'
+        type: choice
+        options:
+        - Development
+        - Shipping
+        - Test
+      platforms:
+        description: 'Target Platforms'
+        required: true
+        default: 'Windows'
+        type: choice
+        options:
+        - Windows
+        - Linux
+        - Mac
+        - All
+
+env:
+  UNREAL_ENGINE_VERSION: "5.6"
+  PROJECT_NAME: "ClimbingGame"
+  BUILD_CONFIGURATION: "Development"
+
+jobs:
+  # Static Analysis and Code Quality
+  code-quality:
+    name: Code Quality Analysis
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+        fetch-depth: 0
+
+    - name: Setup Python for Scripts
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Analysis Tools
+      run: |
+        pip install pylint flake8 black
+        # Install Unreal Engine specific linters
+        sudo apt-get update
+        sudo apt-get install -y cppcheck
+
+    - name: Run C++ Static Analysis
+      run: |
+        find Source -name "*.cpp" -o -name "*.h" | xargs cppcheck --enable=all --suppress=missingIncludeSystem --xml 2> cppcheck-results.xml
+        
+    - name: Upload Analysis Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: static-analysis-results
+        path: cppcheck-results.xml
+
+  # Asset Validation Pipeline
+  asset-validation:
+    name: Asset Validation
+    runs-on: ubuntu-latest
+    needs: [code-quality]
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Asset Validation Tools
+      run: |
+        pip install Pillow PyYAML
+        sudo apt-get install -y imagemagick file
+
+    - name: Run Asset Validation
+      run: python Scripts/CI/validate_assets.py --project-dir . --report-file asset-validation-report.json
+
+    - name: Upload Asset Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: asset-validation-report
+        path: asset-validation-report.json
+
+  # Windows Build
+  build-windows:
+    name: Build Windows
+    runs-on: windows-latest
+    needs: [code-quality, asset-validation]
+    if: github.event.inputs.platforms == 'Windows' || github.event.inputs.platforms == 'All' || github.event.inputs.platforms == null
+    strategy:
+      matrix:
+        build_config: [Development, Shipping]
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+        fetch-depth: 1
+
+    - name: Setup Unreal Engine
+      id: setup-ue
+      shell: powershell
+      run: |
+        # Download and install Unreal Engine 5.6 if not cached
+        $ue_path = "C:\UnrealEngine"
+        if (-Not (Test-Path $ue_path)) {
+          Write-Host "Setting up Unreal Engine 5.6..."
+          # This would typically pull from Epic's launcher or a pre-built container
+          # For now, we'll assume UE is pre-installed on the runner
+        }
+        echo "ue-path=$ue_path" >> $env:GITHUB_OUTPUT
+
+    - name: Generate Project Files
+      shell: cmd
+      run: |
+        "%UNREAL_ENGINE_PATH%\Engine\Binaries\DotNET\UnrealBuildTool.exe" -projectfiles -project="%GITHUB_WORKSPACE%\ClimbingGame.uproject" -game -rocket -progress
+      env:
+        UNREAL_ENGINE_PATH: ${{ steps.setup-ue.outputs.ue-path }}
+
+    - name: Build Project
+      shell: cmd
+      run: |
+        "%UNREAL_ENGINE_PATH%\Engine\Binaries\DotNET\UnrealBuildTool.exe" ClimbingGame Win64 ${{ matrix.build_config }} -Project="%GITHUB_WORKSPACE%\ClimbingGame.uproject" -WaitMutex -FromMsBuild
+      env:
+        UNREAL_ENGINE_PATH: ${{ steps.setup-ue.outputs.ue-path }}
+
+    - name: Run Unit Tests
+      shell: cmd
+      run: |
+        "%UNREAL_ENGINE_PATH%\Engine\Binaries\Win64\UE4Editor-Cmd.exe" "%GITHUB_WORKSPACE%\ClimbingGame.uproject" -ExecCmds="Automation RunTests ClimbingGame" -TestExit="Automation Test Queue Empty" -ReportOutputDir="%GITHUB_WORKSPACE%\TestResults" -log
+      env:
+        UNREAL_ENGINE_PATH: ${{ steps.setup-ue.outputs.ue-path }}
+
+    - name: Package Project
+      if: matrix.build_config == 'Shipping'
+      shell: cmd
+      run: |
+        "%UNREAL_ENGINE_PATH%\Engine\Build\BatchFiles\RunUAT.bat" BuildCookRun -project="%GITHUB_WORKSPACE%\ClimbingGame.uproject" -platform=Win64 -configuration=${{ matrix.build_config }} -cook -build -stage -package -archive -archivedirectory="%GITHUB_WORKSPACE%\Packaged"
+      env:
+        UNREAL_ENGINE_PATH: ${{ steps.setup-ue.outputs.ue-path }}
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: Windows-${{ matrix.build_config }}-Build
+        path: |
+          Binaries/
+          TestResults/
+          Packaged/
+        retention-days: 30
+
+  # Linux Build
+  build-linux:
+    name: Build Linux
+    runs-on: ubuntu-latest
+    needs: [code-quality, asset-validation]
+    if: github.event.inputs.platforms == 'Linux' || github.event.inputs.platforms == 'All'
+    strategy:
+      matrix:
+        build_config: [Development, Shipping]
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+        fetch-depth: 1
+
+    - name: Setup Linux Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential clang mono-complete
+        
+    - name: Setup Unreal Engine
+      run: |
+        # Download and setup Unreal Engine for Linux
+        echo "Setting up Unreal Engine 5.6 for Linux..."
+        # This would pull from a container or pre-built binaries
+
+    - name: Cross-compile for Linux
+      run: |
+        # Use Unreal's cross-compilation tools
+        $UE_PATH/Engine/Binaries/DotNET/UnrealBuildTool ClimbingGame Linux ${{ matrix.build_config }} -Project="$GITHUB_WORKSPACE/ClimbingGame.uproject"
+
+    - name: Upload Linux Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: Linux-${{ matrix.build_config }}-Build
+        path: Binaries/Linux/
+        retention-days: 30
+
+  # Mac Build
+  build-mac:
+    name: Build macOS
+    runs-on: macos-latest
+    needs: [code-quality, asset-validation]
+    if: github.event.inputs.platforms == 'Mac' || github.event.inputs.platforms == 'All'
+    strategy:
+      matrix:
+        build_config: [Development, Shipping]
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+        fetch-depth: 1
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Setup Unreal Engine
+      run: |
+        echo "Setting up Unreal Engine 5.6 for macOS..."
+        # Download and install UE for macOS
+
+    - name: Build for macOS
+      run: |
+        $UE_PATH/Engine/Binaries/DotNET/UnrealBuildTool ClimbingGame Mac ${{ matrix.build_config }} -Project="$GITHUB_WORKSPACE/ClimbingGame.uproject"
+
+    - name: Upload macOS Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: Mac-${{ matrix.build_config }}-Build
+        path: Binaries/Mac/
+        retention-days: 30
+
+  # Multiplayer Testing Pipeline
+  multiplayer-tests:
+    name: Multiplayer Integration Tests
+    runs-on: ubuntu-latest
+    needs: [build-windows, build-linux]
+    if: always() && (needs.build-windows.result == 'success' || needs.build-linux.result == 'success')
+
+    services:
+      # Test database for multiplayer scenarios
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: climbinggame_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Download Build Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: Windows-Development-Build
+        path: ./builds/windows/
+
+    - name: Setup Test Environment
+      run: |
+        pip install pytest pytest-asyncio websockets
+        sudo apt-get install -y docker.io
+        
+    - name: Run Multiplayer Tests
+      run: |
+        python Scripts/CI/run_multiplayer_tests.py \
+          --build-path ./builds/windows/ \
+          --test-scenarios cooperative_climbing \
+          --max-players 4 \
+          --timeout 300
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: multiplayer-test-results
+        path: TestResults/Multiplayer/
+
+  # Performance Benchmarking and Baseline Management
+  performance-benchmark:
+    name: Performance Benchmarking
+    runs-on: windows-latest
+    needs: [build-windows]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Download Windows Build
+      uses: actions/download-artifact@v3
+      with:
+        name: Windows-Development-Build
+        path: ./build/
+
+    - name: Setup Python Environment
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Performance Testing Dependencies
+      run: |
+        pip install psutil matplotlib numpy requests
+        pip install opencv-python pillow  # For screenshot analysis
+
+    - name: Download Performance Baselines
+      run: |
+        # Download existing baselines from artifact store or git
+        if [ -d "Saved/PerformanceBaselines" ]; then
+          echo "Using existing baselines"
+        else
+          echo "No baselines found, will establish new ones"
+          mkdir -p Saved/PerformanceBaselines
+        fi
+
+    - name: Run Comprehensive Performance Tests
+      shell: powershell
+      run: |
+        python Scripts/CI/performance_benchmark.py \
+          --build-path ./build/ \
+          --test-duration 300 \
+          --scenarios climbing_physics rope_simulation multiplayer_stress large_environment memory_stress \
+          --output-dir ./performance-results/
+
+    - name: Establish Performance Baselines (if needed)
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        python Scripts/CI/establish_baselines.py \
+          --results-dir ./performance-results/ \
+          --baseline-dir ./Saved/PerformanceBaselines/ \
+          --platform Windows \
+          --hardware-tier auto-detect
+
+    - name: Performance Regression Analysis
+      run: |
+        python Scripts/CI/performance_regression_check.py \
+          --current-results ./performance-results/benchmark_results.json \
+          --baseline-dir ./Saved/PerformanceBaselines/ \
+          --output-dir ./regression-analysis/ \
+          --threshold 10 \
+          --fail-on-regression
+
+    - name: Generate Performance Dashboard Data
+      run: |
+        python Scripts/CI/generate_performance_dashboard.py \
+          --results-dir ./performance-results/ \
+          --regression-dir ./regression-analysis/ \
+          --output-dir ./performance-dashboard/
+
+    - name: Upload Performance Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-benchmark-results
+        path: |
+          performance-results/
+          regression-analysis/
+          performance-dashboard/
+
+    - name: Upload Updated Baselines
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-baselines
+        path: Saved/PerformanceBaselines/
+
+    - name: Comment Performance Results on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const path = './regression-analysis/regression_analysis.json';
+          
+          if (fs.existsSync(path)) {
+            const results = JSON.parse(fs.readFileSync(path, 'utf8'));
+            const summary = results.summary;
+            
+            const comment = `## 🚀 Performance Analysis Results
+            
+            **Overall Status:** ${summary.overall_status === 'PASSED' ? '✅ PASSED' : '❌ FAILED'}
+            **Performance Score:** ${summary.overall_score.toFixed(1)}/100
+            
+            **Test Results:**
+            - Tests Run: ${summary.tests_run}
+            - Tests Passed: ${summary.tests_passed}
+            - Tests Failed: ${summary.tests_failed}
+            - Critical Issues: ${summary.critical_issues_count}
+            - Performance Regressions: ${summary.regression_issues_count}
+            
+            ${summary.critical_issues.length > 0 ? 
+              `**🚨 Critical Issues:**\n${summary.critical_issues.map(issue => `- ${issue}`).join('\n')}` : ''}
+            
+            ${summary.regression_issues.length > 0 ? 
+              `**⚠️ Performance Regressions:**\n${summary.regression_issues.map(issue => `- ${issue}`).join('\n')}` : ''}
+            
+            ${summary.recommendations.length > 0 ? 
+              `**💡 Recommendations:**\n${summary.recommendations.slice(0, 5).map(rec => `- ${rec}`).join('\n')}` : ''}
+            
+            <details>
+            <summary>📊 Detailed Test Results</summary>
+            
+            ${summary.test_results.map(test => 
+              `**${test.test_name}:** ${test.passed ? '✅' : '❌'} (Score: ${test.score.toFixed(1)}/100)`
+            ).join('\n')}
+            
+            </details>
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          }
+
+  # Dedicated Performance Monitoring Job
+  performance-monitoring:
+    name: Real-time Performance Monitoring
+    runs-on: windows-latest
+    needs: [performance-benchmark]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Download Performance Results
+      uses: actions/download-artifact@v3
+      with:
+        name: performance-benchmark-results
+
+    - name: Setup Monitoring Infrastructure
+      run: |
+        # Setup performance monitoring dashboard
+        python Scripts/CI/setup_monitoring.py \
+          --results-dir ./performance-results/ \
+          --dashboard-config Scripts/CI/dashboard-config.yml
+
+    - name: Deploy Performance Dashboard
+      run: |
+        # Deploy to monitoring service (e.g., Grafana, custom dashboard)
+        python Scripts/CI/deploy_dashboard.py \
+          --dashboard-dir ./performance-dashboard/ \
+          --deployment-target production
+
+  # Deployment Pipeline
+  deploy:
+    name: Deploy to Environments
+    runs-on: ubuntu-latest
+    needs: [build-windows, build-linux, build-mac, multiplayer-tests]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Download All Build Artifacts
+      uses: actions/download-artifact@v3
+
+    - name: Deploy to Staging
+      run: |
+        python Scripts/CI/deploy.py \
+          --environment staging \
+          --builds-dir . \
+          --config-file Scripts/CI/deployment-config.yml
+
+    - name: Run Smoke Tests
+      run: |
+        python Scripts/CI/smoke_tests.py \
+          --environment staging \
+          --timeout 180
+
+    - name: Deploy to Production
+      if: success()
+      run: |
+        python Scripts/CI/deploy.py \
+          --environment production \
+          --builds-dir . \
+          --config-file Scripts/CI/deployment-config.yml
+
+  # Notification and Reporting
+  notify:
+    name: Notify Results
+    runs-on: ubuntu-latest
+    needs: [deploy, performance-benchmark]
+    if: always()
+
+    steps:
+    - name: Send Teams Notification
+      uses: aliencube/microsoft-teams-actions@v0.8.0
+      with:
+        webhook_uri: ${{ secrets.TEAMS_WEBHOOK }}
+        title: ClimbingGame Build Results
+        summary: Build and deployment pipeline completed
+        text: |
+          **Build Status:** ${{ job.status }}
+          **Branch:** ${{ github.ref }}
+          **Commit:** ${{ github.sha }}
+          **Triggered by:** ${{ github.actor }}
+        theme_color: ${{ job.status == 'success' && '00ff00' || 'ff0000' }}

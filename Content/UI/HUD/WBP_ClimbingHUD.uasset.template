@@ -1,0 +1,59 @@
+// ClimbingHUD Widget Blueprint Template
+// This file should be created in Unreal Editor as a Widget Blueprint
+// Parent Class: ClimbingHUD (C++)
+
+Widget Hierarchy:
+├── Root (Canvas Panel)
+│   ├── StaminaContainer (Horizontal Box) [Anchor: Top-Left, Position: (20, 20)]
+│   │   ├── StaminaIcon (Image) [Size: 24x24]
+│   │   └── StaminaBar (Progress Bar) [Size: 150x8, Fill Color: Green]
+│   │
+│   ├── HealthContainer (Horizontal Box) [Anchor: Top-Left, Position: (20, 50)]
+│   │   ├── HealthIcon (Image) [Size: 24x24]
+│   │   └── HealthBar (Progress Bar) [Size: 150x8, Fill Color: Red]
+│   │
+│   ├── GripContainer (Horizontal Box) [Anchor: Bottom-Left, Position: (20, -80)]
+│   │   ├── GripLabel (Text Block) "Grip:"
+│   │   ├── LeftGripBar (Progress Bar) [Size: 60x8, Fill Color: Blue]
+│   │   ├── Spacer (10px)
+│   │   └── RightGripBar (Progress Bar) [Size: 60x8, Fill Color: Blue]
+│   │
+│   ├── ToolDurabilityContainer (Horizontal Box) [Anchor: Top-Right, Position: (-200, 20)]
+│   │   // Dynamic children created at runtime
+│   │
+│   ├── AltitudeText (Text Block) [Anchor: Top-Center, Position: (0, 20)]
+│   │   // Font: Bold, Size: 16, Color: White
+│   │   // Text: "Altitude: 0m"
+│   │
+│   ├── EnvironmentInfoText (Text Block) [Anchor: Top-Center, Position: (0, 45)]
+│   │   // Font: Regular, Size: 12, Color: Light Gray
+│   │   // Text: "Rock: Granite | Weather: Clear | Temp: 15°C"
+│   │
+│   └── InjuryWarningPanel (Canvas Panel) [Anchor: Center, Visibility: Hidden]
+│       ├── WarningBackground (Image) [Size: 400x80, Color: Red with Alpha 0.8]
+│       ├── InjuryWarningIcon (Image) [Position: (10, 10), Size: 32x32]
+│       └── InjuryWarningText (Text Block) [Position: (50, 25), Color: White]
+
+// Widget Binding Names (match C++ meta=(BindWidget)):
+// - StaminaBar
+// - HealthBar  
+// - LeftGripBar
+// - RightGripBar
+// - ToolDurabilityContainer
+// - AltitudeText
+// - EnvironmentInfoText
+// - InjuryWarningPanel
+// - InjuryWarningText
+// - InjuryWarningIcon
+
+// Animation Blueprints to create:
+// - StaminaWarningAnim: Pulse red when stamina low
+// - HealthWarningAnim: Pulse red when health low  
+// - GripWarningAnim: Flash blue when grip strength low
+// - InjuryWarningAnim: Slide in from top with shake effect
+
+// Responsive Design Notes:
+// - Use anchor points for proper scaling
+// - All UI elements should scale with screen size
+// - Test on different aspect ratios (16:9, 16:10, 21:9)
+// - Consider VR viewport requirements (larger text, more spacing)

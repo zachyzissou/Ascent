@@ -1,0 +1,85 @@
+// Inventory Widget Blueprint Template  
+// Parent Class: InventoryWidget (C++)
+
+Widget Hierarchy:
+├── Root (Canvas Panel)
+│   ├── BackgroundPanel (Image) [Full screen, Color: Black 0.8 Alpha]
+│   │
+│   ├── MainContainer (Horizontal Box) [Anchor: Fill, Margins: 50]
+│   │   ├── LeftPanel (Vertical Box) [Size: 60% width]
+│   │   │   ├── CategoryFilters (Horizontal Box)
+│   │   │   │   ├── ProtectionFilterButton (Button) "Protection"
+│   │   │   │   ├── HardwareFilterButton (Button) "Hardware"
+│   │   │   │   ├── RopeFilterButton (Button) "Rope"
+│   │   │   │   ├── AnchoringFilterButton (Button) "Anchoring"
+│   │   │   │   ├── UtilityFilterButton (Button) "Utility"
+│   │   │   │   ├── EmergencyFilterButton (Button) "Emergency"
+│   │   │   │   └── AllCategoriesButton (Button) "All"
+│   │   │   │
+│   │   │   ├── Spacer (10px)
+│   │   │   │
+│   │   │   └── InventoryScrollBox (Scroll Box) [Fill remaining space]
+│   │   │       └── InventoryGrid (Uniform Grid Panel) [8 columns]
+│   │   │           // Dynamic inventory slot widgets
+│   │   │
+│   │   └── RightPanel (Vertical Box) [Size: 40% width]
+│   │       ├── ItemDetailsContainer (Vertical Box)
+│   │       │   ├── ItemPreviewImage (Image) [Size: 128x128]
+│   │       │   ├── ItemNameText (Text Block) [Font: Bold, Size: 18]
+│   │       │   ├── ItemDescriptionText (Text Block) [Font: Regular, Size: 12, Multi-line]
+│   │       │   └── ItemStatsText (Text Block) [Font: Mono, Size: 10]
+│   │       │
+│   │       ├── Spacer (20px)
+│   │       │
+│   │       ├── ActionButtonsContainer (Horizontal Box)
+│   │       │   ├── EquipButton (Button) "Equip/Unequip"
+│   │       │   ├── UseButton (Button) "Use"
+│   │       │   └── DropButton (Button) "Drop"
+│   │       │
+│   │       ├── Spacer (20px)
+│   │       │
+│   │       ├── QuickSelectLabel (Text Block) "Quick Select (1-9)"
+│   │       └── QuickSelectGrid (Uniform Grid Panel) [9 columns, 1 row]
+│   │           // Quick select slot widgets
+│   │
+│   ├── StatsContainer (Horizontal Box) [Anchor: Bottom-Center]
+│   │   ├── TotalWeightText (Text Block) "Weight: 8.5/15.0 kg"
+│   │   ├── Spacer (20px)
+│   │   └── ItemCountText (Text Block) "Items: 23"
+│   │
+│   └── CloseButton (Button) [Anchor: Top-Right] "X"
+
+// Widget Binding Names:
+// - InventoryGrid
+// - InventoryScrollBox  
+// - ItemNameText
+// - ItemDescriptionText
+// - ItemStatsText
+// - ItemPreviewImage
+// - EquipButton
+// - UseButton
+// - DropButton
+// - ProtectionFilterButton through EmergencyFilterButton
+// - AllCategoriesButton
+// - QuickSelectGrid
+// - TotalWeightText
+// - ItemCountText
+
+// Additional Widget Classes to Create:
+// - WBP_InventorySlot: Individual inventory item display
+// - WBP_QuickSelectSlot: Quick access slot (1-9 keys)
+
+// Input Bindings:
+// - Tab: Toggle inventory visibility
+// - 1-9: Quick select slots
+// - WASD/Arrow Keys: Navigate inventory grid
+// - Enter: Use selected item
+// - E: Equip/Unequip selected item
+// - Q: Drop selected item
+
+// Accessibility Features:
+// - Keyboard navigation support
+// - Screen reader compatibility
+// - High contrast mode support
+// - Scalable UI elements
+// - Colorblind-friendly indicators

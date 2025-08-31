@@ -1,0 +1,84 @@
+# ClimbingGame Deployment Configuration
+
+environments:
+  development:
+    name: "Development Environment"
+    url: "https://dev.climbinggame.internal"
+    path: "/var/www/climbinggame-dev"
+    auto_deploy: true
+    branch: "develop"
+    health_check_url: "https://dev.climbinggame.internal/health"
+    
+  staging:
+    name: "Staging Environment"
+    url: "https://staging.climbinggame.com"
+    path: "/var/www/climbinggame-staging"
+    auto_deploy: true
+    branch: "main"
+    health_check_url: "https://staging.climbinggame.com/health"
+    requires_approval: false
+    
+  production:
+    name: "Production Environment"
+    url: "https://climbinggame.com"
+    path: "/var/www/climbinggame-prod"
+    auto_deploy: false
+    branch: "main"
+    health_check_url: "https://climbinggame.com/health"
+    requires_approval: true
+    backup_enabled: true
+
+# Build configurations
+build_configs:
+  development:
+    configuration: "Development"
+    enable_debug_symbols: true
+    enable_stats: true
+    enable_logging: true
+    
+  staging:
+    configuration: "Development"
+    enable_debug_symbols: false
+    enable_stats: true
+    enable_logging: true
+    
+  production:
+    configuration: "Shipping"
+    enable_debug_symbols: false
+    enable_stats: false
+    enable_logging: false
+
+# Notification settings
+notifications:
+  teams:
+    webhook_url: "${TEAMS_WEBHOOK}"
+    enabled: true
+    notify_on:
+      - deployment_start
+      - deployment_success
+      - deployment_failure
+      - test_failure
+      
+  email:
+    smtp_server: "smtp.company.com"
+    enabled: false
+    recipients:
+      - "devops@company.com"
+      - "team-leads@company.com"
+
+# Health check configuration
+health_checks:
+  timeout: 30  # seconds
+  retry_count: 3
+  retry_delay: 10  # seconds
+  endpoints:
+    - path: "/health"
+      expected_status: 200
+    - path: "/api/status"
+      expected_status: 200
+
+# Rollback configuration
+rollback:
+  enabled: true
+  keep_versions: 5
+  auto_rollback_on_health_check_failure: true
